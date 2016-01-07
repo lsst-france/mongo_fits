@@ -9,9 +9,14 @@ from bson import CodecOptions, SON
 import glob
 import re
 
-MONGO_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/lsst'
-MONGO_URL = r'mongodb://127.0.0.1:27017'
+CC = True
 
+if CC:
+    MONGO_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/lsst'
+    FILES = '/sps/lsst/data/CFHTLS/D2/*.fz'
+else:
+    MONGO_URL = r'mongodb://127.0.0.1:27017'
+    FILES = 'data/*'
 
 def fits_to_mongo(fits, name):
     hdulist = pyfits.open(name)
@@ -38,30 +43,38 @@ def fits_to_mongo(fits, name):
 
 
 if __name__ == '__main__':
-    # 'mongodb://user:' + password + '@127.0.0.1'
-    # client = pymongo.MongoClient('134.158.246.25', 27017)
-    client = pymongo.MongoClient('127.0.0.1', 27017)
+    client = pymongo.MongoClient(MONGO_URL)
 
-    print client.database_names()
+    # print client.database_names()
 
     # client.drop_database('lsst')
 
     lsst = client.lsst
 
-    print lsst.collection_names()
+    for coll in lsst.collection_names():
+        c = lsst[coll]
+        print coll, c.count()
 
-    lsst.test.insert_many([{'i': i} for i in xrange(1000)]).inserted_ids
-    print lsst.test.count()
+    # lsst.test.insert_many([{'i': i} for i in xrange(1000)]).inserted_ids
+    # print lsst.test.count()
+
+    opts = CodecOptions(document_class=SON)
+    fits = lsst.fits.with_options(codec_options=opts)
+
+    for coll in lsst.collection_names():
+        c = lsst[coll]
+        print coll, c.count()
 
     exit()
 
-    opts = CodecOptions(document_class=SON)
-    fits = lsst['fits'].with_options(codec_options=opts)
 
-    for file in glob.glob('data/*.fz'):
+    for file in glob.glob(FILES):
         fits_to_mongo(fits, file)
-        # exit ()
+        break
+
+    print fits.count()
 
     out = fits.find(SON({u'CNPIX1': 10292}))
     for x in out:
         print x
+

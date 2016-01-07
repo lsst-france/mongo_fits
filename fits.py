@@ -6,6 +6,12 @@ __author__ = 'arnault'
 import pymongo
 import pyfits
 from bson import CodecOptions, SON
+import glob
+import re
+
+MONGO_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/lsst'
+MONGO_URL = r'mongodb://127.0.0.1:27017'
+
 
 def fits_to_mongo(fits, name):
     hdulist = pyfits.open(name)
@@ -22,23 +28,39 @@ def fits_to_mongo(fits, name):
         value = hdr.get(k)
         object[k] = value
 
-    fits.insert_one(object)
+    try:
+        fits.insert_one(object)
+    except Exception as e:
+        print  e.message
+
+    pass
+
 
 
 if __name__ == '__main__':
-    client = pymongo.MongoClient()
-    client.drop_database('LSST')
-    lsst = client.LSST
+    # 'mongodb://user:' + password + '@127.0.0.1'
+    # client = pymongo.MongoClient('134.158.246.25', 27017)
+    client = pymongo.MongoClient('127.0.0.1', 27017)
+
+    print client.database_names()
+
+    # client.drop_database('lsst')
+
+    lsst = client.lsst
+
     print lsst.collection_names()
 
     lsst.test.insert_many([{'i': i} for i in xrange(1000)]).inserted_ids
     print lsst.test.count()
 
+    exit()
+
     opts = CodecOptions(document_class=SON)
     fits = lsst['fits'].with_options(codec_options=opts)
 
-    fits_to_mongo(fits, '/workspace/charm/PyPlot/doc/source/solutions/data/dss.19.59.54.3+09.59.20.9 4x2.fits')
-    fits_to_mongo(fits, '/workspace/charm/PyPlot/doc/source/solutions/data/dss.19.59.54.3+09.59.20.9 10x10.fits')
+    for file in glob.glob('data/*.fz'):
+        fits_to_mongo(fits, file)
+        # exit ()
 
     out = fits.find(SON({u'CNPIX1': 10292}))
     for x in out:

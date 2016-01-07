@@ -5,11 +5,12 @@ __author__ = 'arnault'
 
 import pymongo
 import pyfits
+import numpy
 from bson import CodecOptions, SON
 import glob
 import re
 
-CC = True
+CC = False
 
 if CC:
     MONGO_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/lsst'
@@ -25,18 +26,36 @@ def fits_to_mongo(fits, name):
 
     # print hdr.tostring(sep='\n', padding=False)
 
-    object = SON()
+    # object = SON()
+    object = dict()
 
     for k in hdr.keys():
+        k = k.strip()
         if k == '':
             continue
+        if k == 'COMMENT':
+            continue
+        if k == 'HISTORY':
+            continue
         value = hdr.get(k)
-        object[k] = value
+        if isinstance(value, long):
+            # value = str(value)
+            try:
+                x = str(value)
+            except:
+                print 'bad conversion'
+                raise
+        else:
+            x = value
+        # print k, value
+        object[k] = x
 
     try:
         fits.insert_one(object)
     except Exception as e:
+        print 'oups'
         print  e.message
+        pass
 
     pass
 
@@ -51,30 +70,32 @@ if __name__ == '__main__':
 
     lsst = client.lsst
 
-    for coll in lsst.collection_names():
-        c = lsst[coll]
-        print coll, c.count()
+    try:
+        test = lsst.test
+        lsst.drop_collection('test')
+    except InvalidName as e:
+        pass
 
-    # lsst.test.insert_many([{'i': i} for i in xrange(1000)]).inserted_ids
-    # print lsst.test.count()
+    try:
+        fits = lsst.fits
+        lsst.drop_collection('fits')
+    except InvalidName as e:
+        pass
 
     opts = CodecOptions(document_class=SON)
-    fits = lsst.fits.with_options(codec_options=opts)
+    fits = lsst.create_collection('fits', codec_options=opts)
 
     for coll in lsst.collection_names():
         c = lsst[coll]
         print coll, c.count()
-
-    exit()
-
 
     for file in glob.glob(FILES):
         fits_to_mongo(fits, file)
-        break
+        # break
 
     print fits.count()
 
-    out = fits.find(SON({u'CNPIX1': 10292}))
+    out = fits.find(SON({u'OBJECT': 'D2'}))
     for x in out:
         print x
 

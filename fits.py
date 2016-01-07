@@ -10,11 +10,11 @@ from bson import CodecOptions, SON
 import glob
 import re
 
-CC = False
+CC = True
 
 if CC:
     MONGO_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/lsst'
-    FILES = '/sps/lsst/data/CFHTLS/D2/*.fz'
+    FILES = '/sps/lsst/data/CFHT/input/raw/*/*/*/*/*.fits.fz'
 else:
     MONGO_URL = r'mongodb://127.0.0.1:27017'
     FILES = 'data/*'
@@ -89,13 +89,16 @@ if __name__ == '__main__':
         c = lsst[coll]
         print coll, c.count()
 
+    # we killed at /sps/lsst/data/CFHT/input/raw/06AL01/D3/2006-06-02/g/850592p.fits.fz
+
     for file in glob.glob(FILES):
+        print file
         fits_to_mongo(fits, file)
         # break
 
     print fits.count()
 
-    out = fits.find(SON({u'OBJECT': 'D2'}))
-    for x in out:
-        print x
+    # out = fits.find(SON({u'OBJECT': 'D2'}))
+    # for x in out:
+    #     print x
 

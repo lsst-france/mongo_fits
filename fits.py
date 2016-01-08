@@ -8,19 +8,21 @@ import pyfits
 import numpy
 from bson import CodecOptions, SON
 import glob
-import re
+import os
 
 CC = True
 
-if CC:
-    MONGO_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/lsst'
-    FILES = '/sps/lsst/data/CFHT/input/raw/*/*/*/*/*.fits.fz'
-else:
+if os.name == 'nt':
     MONGO_URL = r'mongodb://127.0.0.1:27017'
-    FILES = 'data/*'
+    FILES_ROOT = 'data/'
+else:
+    MONGO_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/lsst'
+    FILES_ROOT = '/sps/lsst/data/CFHT/input/raw/'
+
+FILES = FILES_ROOT + '/*/*/*/*/*.fits.fz'
 
 def fits_to_mongo(fits, name):
-    hdulist = pyfits.open(name)
+    hdulist = pyfits.open(FILES_ROOT + name)
     hdulist.verify('silentfix')
     hdr = hdulist[0].header
 
@@ -49,6 +51,7 @@ def fits_to_mongo(fits, name):
             x = value
         # print k, value
         object[k] = x
+        object['where'] = name.split('/')
 
     try:
         fits.insert_one(object)
@@ -71,19 +74,12 @@ if __name__ == '__main__':
     lsst = client.lsst
 
     try:
-        test = lsst.test
-        lsst.drop_collection('test')
-    except InvalidName as e:
-        pass
-
-    try:
         fits = lsst.fits
-        lsst.drop_collection('fits')
-    except InvalidName as e:
+        # lsst.drop_collection('fits')
+    except:
         pass
-
-    opts = CodecOptions(document_class=SON)
-    fits = lsst.create_collection('fits', codec_options=opts)
+        opts = CodecOptions(document_class=SON)
+        fits = lsst.create_collection('fits', codec_options=opts)
 
     for coll in lsst.collection_names():
         c = lsst[coll]
@@ -92,13 +88,21 @@ if __name__ == '__main__':
     # we killed at /sps/lsst/data/CFHT/input/raw/06AL01/D3/2006-06-02/g/850592p.fits.fz
 
     for file in glob.glob(FILES):
-        print file
-        fits_to_mongo(fits, file)
-        # break
+        file = file.replace('\\', '/')
+        f = file.replace(FILES_ROOT, '')
+        print f
+
+        out = fits.find( { 'where': { '$in': [file.split('/')[-1]] } } )
+
+        if out.count() == 0:
+            fits_to_mongo(fits, f)
+        else:
+            for x in out:
+                print x[u'where']
 
     print fits.count()
 
-    # out = fits.find(SON({u'OBJECT': 'D2'}))
-    # for x in out:
-    #     print x
+    out = fits.find( { 'where': { '$in': [u'732190p.fits.fz'] } } )
+    for x in out:
+        print x[u'where']
 

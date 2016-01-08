@@ -67,15 +67,10 @@ def fits_to_mongo(fits, name):
 if __name__ == '__main__':
     client = pymongo.MongoClient(MONGO_URL)
 
-    # print client.database_names()
-
-    # client.drop_database('lsst')
-
     lsst = client.lsst
 
     try:
         fits = lsst.fits
-        # lsst.drop_collection('fits')
     except:
         pass
         opts = CodecOptions(document_class=SON)
@@ -90,13 +85,16 @@ if __name__ == '__main__':
     for file in glob.glob(FILES):
         file = file.replace('\\', '/')
         f = file.replace(FILES_ROOT, '')
-        print f
+        print 'existing file', f
 
         out = fits.find( { 'where': { '$in': [file.split('/')[-1]] } } )
 
         if out.count() == 0:
+            print 'encode file', f
             fits_to_mongo(fits, f)
+            pass
         else:
+            print f, 'is encoded'
             for x in out:
                 print x[u'where']
 

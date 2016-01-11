@@ -4,11 +4,14 @@
 __author__ = 'arnault'
 
 import pymongo
-import pyfits
-import numpy
-from bson import CodecOptions, SON
+import numpy as np
+from bson import CodecOptions, SON, BSON
+from bson.binary import Binary
+import pickle
 import glob
 import os
+from astropy import wcs as pywcs
+from astropy.io import fits as pyfits
 
 CC = True
 
@@ -24,41 +27,50 @@ FILES = FILES_ROOT + '/*/*/*/*/*.fits.fz'
 def fits_to_mongo(fits, name):
     hdulist = pyfits.open(FILES_ROOT + name)
     hdulist.verify('silentfix')
-    hdr = hdulist[0].header
 
-    # print hdr.tostring(sep='\n', padding=False)
+    for index, hdu in enumerate(hdulist):
+        """ handle all hdus of this file """
+        hdr = hdu.header
 
-    # object = SON()
-    object = dict()
+        wcs = pywcs.WCS(hdulist[0].header)
 
-    for k in hdr.keys():
-        k = k.strip()
-        if k == '':
-            continue
-        if k == 'COMMENT':
-            continue
-        if k == 'HISTORY':
-            continue
-        value = hdr.get(k)
-        if isinstance(value, long):
-            # value = str(value)
-            try:
-                x = str(value)
-            except:
-                print 'bad conversion'
-                raise
-        else:
-            x = value
-        # print k, value
-        object[k] = x
+        """ just consider the header of this hdu """
+
+        # print hdr.tostring(sep='\n', padding=False)
+
+        object = SON()
+
+        object['header_index'] = index
         object['where'] = name.split('/')
 
-    try:
-        fits.insert_one(object)
-    except Exception as e:
-        print 'oups'
-        print  e.message
-        pass
+        thebytes = pickle.dumps(wcs, protocol=2)
+        object['wcs'] = Binary(thebytes)
+
+        for card in hdr._cards:
+            comment = card.comment
+            key = card.keyword
+            value = card.value
+            # print '[%s] = [%s] | %s' % (key, value, comment)
+            if key == '':
+                continue
+            if key == 'COMMENT':
+                continue
+                pass
+            if key == 'HISTORY':
+                continue
+                pass
+            if isinstance(value, long):
+                value = str(value)
+
+            # print key, value
+            object[key] = (value, comment)
+
+        try:
+            fits.insert_one(object)
+        except Exception as e:
+            print 'oups'
+            print  e.message
+            pass
 
     pass
 
@@ -69,10 +81,18 @@ if __name__ == '__main__':
 
     lsst = client.lsst
 
+    recreate = True
+
+    if recreate:
+        try:
+            fits = lsst.fits
+            lsst.drop_collection('fits')
+        except:
+            pass
+
     try:
         fits = lsst.fits
     except:
-        pass
         opts = CodecOptions(document_class=SON)
         fits = lsst.create_collection('fits', codec_options=opts)
 
@@ -98,7 +118,9 @@ if __name__ == '__main__':
             for x in out:
                 print x[u'where']
 
-    print fits.count()
+        break
+
+    print '# of objects in collection', fits.count()
 
     out = fits.find( { 'where': { '$in': [u'732190p.fits.fz'] } } )
     for x in out:

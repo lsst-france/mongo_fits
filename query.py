@@ -65,10 +65,10 @@ if __name__ == '__main__':
 
     out = lsst.fits.find( { 'where': { '$in': [u'i'] } } )
     for x in out:
-        print 'where    =', x[u'where'], x['header_index']
-        print 'CRVAL    = ', x['CRVAL1'], x['CRVAL2']
+        print '---------- where    =', x[u'where'], x['header_index']
         print 'DETSIZE  = ', x['DETSIZE']
-        if    'XTENSION = ' in x: print 'XTENSION', x['XTENSION']
+        for a in 'CD1_1', 'CD1_2', 'CD2_1', 'CD2_2', 'CRVAL1', 'CRVAL2', 'CRPIX1', 'CRPIX2':
+            if a in x: print '%s = %s' % (a, x[a])
         path = FILES_ROOT + '/'.join(x[u'where'])
         print path
 
@@ -83,12 +83,13 @@ if __name__ == '__main__':
                     sky = wcs.wcs_pix2world(pixel, 0)
                     ra, dec = sky[0]
 
-                    print 'RADEC', ra, dec
+                    # print 'RADEC', ra, dec
 
                 except:
                     raise
             else:
-                print key, x[key]
+                # print key, x[key]
+                pass
 
 
         continue

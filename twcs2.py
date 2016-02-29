@@ -84,7 +84,7 @@ def read_hdus(fitsfile):
 
     Return a HDUList()
     """
-    hdus = None
+    data_fits = None
     try:
         with fits.open(fitsfile) as data_fits:
             try:
@@ -94,7 +94,7 @@ def read_hdus(fitsfile):
                 print 'Error: %s' % err
     except EnvironmentError as err:
         print 'Cannot open the data fits file. - %s' % err
-    return hdus
+    return data_fits
 
 # Load the FITS hdulist using pyfits
 if os.name == 'nt':

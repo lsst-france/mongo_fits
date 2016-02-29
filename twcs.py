@@ -6,59 +6,97 @@
 from __future__ import division # confidence high
 
 import numpy as np
-import astropy.wcs
+from astropy import wcs as pywcs
 from astropy.io import fits
 import re
+import os
 
-def wcs_convert_to_radec(wcs, x, y):
-    pixel = np.array([[x, y],], np.float_)
-    sky = wcs.wcs_pix2world(pixel, 0)
-    ra, dec = sky[0]
-    return ra, dec
+class WCS:
+    """
+    Class to implement the transformation algorithm to convert pixel coordinate into WCS coordinates
+    this reflects what is provided in the wcslib module
+    """
+    def __init__(self, header):
+        """
+        Constructor: fetch all WCS information to setup parameters needed for the
+        conversion algorithm
+
+        :param header: this is the FITS header
+        :return: Nonz
+        """
+
+        CRPIX1 = header['CRPIX1']
+        CRPIX2 = header['CRPIX2']
+
+        CD1_1  = header['CD1_1']
+        CD1_2  = header['CD1_2']
+        CRVAL1 = header['CRVAL1']
+        CD2_1  = header['CD2_1']
+        CD2_2  = header['CD2_2']
+        CRVAL2 = header['CRVAL2']
+
+        # prepare the transfromation matrix
+
+        self.xy0 = np.array([CRPIX1, CRPIX2], np.float64)
+
+        a = CD1_1
+        b = CD1_2
+        c = CRVAL1
+        d = CD2_1
+        e = CD2_2
+        f = CRVAL2
+
+        self.matrix = np.array([[a, b], [d, e]], np.float64)
+        self.ra_dec0 = np.array([c, f], np.float64)
 
 
-def xy_to_radec(header, X, Y):
-    x0 = header['CRPIX1']
-    y0 = header['CRPIX2']
+    def xy_to_radec(self, xy):
+        """
+        Function to convert a pixel coordinates into a WCS coordonates
 
-    a = header['CD1_1']
-    b = header['CD1_2']
-    c = header['CRVAL1']
-    d = header['CD2_1']
-    e = header['CD2_2']
-    f = header['CRVAL2']
+        :param xy: a 1D ndarray
+        :return: ra_dec the result of the conversion as a 1d-array
+        """
 
-    x = X - x0
-    y = Y - y0
+        xy -= self.xy0
 
-    ra = (a*x + b*y) + c
-    dec = (d*x + e*y) + f
+        ra_dec = self.matrix.dot(xy)
 
-    return ra, dec
+        dec = self.ra_dec0[1] + ra_dec[1]
+        dec_radians = 2.0 * np.pi * dec/360.0
 
-def radec_to_xy(header, ra, dec):
-    x0 = header['CRPIX1']
-    y0 = header['CRPIX2']
+        scale = np.array([np.cos(dec_radians), 1.0])
 
-    a = header['CD1_1']
-    b = header['CD1_2']
-    c = header['CRVAL1']
-    d = header['CD2_1']
-    e = header['CD2_2']
-    f = header['CRVAL2']
+        ra_dec /= scale
+        ra_dec += self.ra_dec0
 
-    numerator = b*d - a*e
+        return ra_dec
 
-    x = (b*f - e*c) / numerator
-    y = (d*c - a*f) / numerator
+    def radec_to_xy(self, ra_dec):
+        # not yet done
+        return None
 
-    x += x0
-    y += y0
 
-    return x, y
+def read_hdus(fitsfile):
+    """ pixels from FITS file
+
+    cf http://stsdas.stsci.edu/stsci_python_epydoc/pyfits/api_hdulists.html
+
+    Return a HDUList()
+    """
+    data_fits = None
+    try:
+        with fits.open(fitsfile) as data_fits:
+            try:
+                data_fits.verify('silentfix')
+                return data_fits
+            except ValueError as err:
+                print 'Error: %s' % err
+    except EnvironmentError as err:
+        print 'Cannot open the data fits file. - %s' % err
+    return data_fits
 
 # Load the FITS hdulist using pyfits
-
 if os.name == 'nt':
     file_path = 'data/'
 else:
@@ -66,52 +104,41 @@ else:
 
 file_name = file_path + '/03BL01/D3/2004-01-13/i/732183p.fits.fz'
 
-data_fits = None
-try:
-    with fits.open(file_name) as data_fits:
-        try:
-            data_fits.verify('silentfix')
-        except ValueError as err:
-            print 'Error: %s' % err
-except EnvironmentError as err:
-    exit()
-
-
+hdus = read_hdus(file_name)
 # Parse the WCS keywords in the primary HDU
 
 for n in range(1, 36):
-    header = data_fits[n].header
-    wcs = astropy.wcs.WCS(header)
+    print '--------------------------------'
+    header = hdus[n].header
+    wcs = pywcs.WCS(header)
 
-    # Print out the "name" of the WCS, as defined in the FITS header
-    # print wcs.wcs.name
-
-    # Print out all of the settings that were parsed from the header
-    # print '---------------------'
-    # print wcs.wcs
-    # print '---------------------'
+    mywcs = WCS(header)
 
     # Some pixel coordinates of interest.
-    detsize = header['DETSIZE']
+    detsize = header['DATASEC']
     m = re.match('[^\[]*\[([0-9]+):([0-9]+),([0-9]+):([0-9]+).*', detsize)
-    low1 = int(m.group(1))
-    high1 = int(m.group(2))
-    low2 = int(m.group(3))
-    high2 = int(m.group(4))
+    low1 = np.float64(m.group(1))
+    high1 = np.float64(m.group(2))
+    low2 = np.float64(m.group(3))
+    high2 = np.float64(m.group(4))
 
-    ref_ra1, ref_dec1 = wcs_convert_to_radec(wcs, low1, low2)
-    ref_ra2, ref_dec2 = wcs_convert_to_radec(wcs, high1, high2)
+    low = [low1, low2]
+    high = [high1, high2]
 
-    ra1, dec1 = xy_to_radec(header, low1, low2)
-    ra2, dec2 = xy_to_radec(header, high1, high2)
+    pixel = np.array([low, high], np.float64)
+    sky = wcs.wcs_pix2world(pixel, 0)
 
-    d_ra1 = abs(ref_ra1 - ra1)/ra1
-    d_dec1 = abs(ref_dec1 - dec1)/dec1
+    ra_dec_low = mywcs.xy_to_radec(low)
+    ra_dec_high = mywcs.xy_to_radec(high)
 
-    d_ra2 = abs(ref_ra2 - ra2)/ra2
-    d_dec2 = abs(ref_dec2 - dec2)/dec2
+    # print 'low=', low, 'high=', high
 
+    print 'mat=', ra_dec_low, ra_dec_high
+    print 'wcs=', sky[0], sky[1]
 
-    print detsize, ra1, dec1, ra2, dec2, d_ra1, d_dec1, d_ra2, d_dec2
+    d_low  = (sky[0] - ra_dec_low)/sky[0]
+    d_high = (sky[1] - ra_dec_high)/sky[1]
+
+    print 'd  =', d_low, d_high
 
 

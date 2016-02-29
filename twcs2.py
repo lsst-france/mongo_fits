@@ -9,6 +9,7 @@ import numpy as np
 from astropy import wcs as pywcs
 from astropy.io import fits
 import re
+import os
 
 class WCS:
     """
@@ -96,7 +97,12 @@ def read_hdus(fitsfile):
     return hdus
 
 # Load the FITS hdulist using pyfits
-hdus = read_hdus('data/03BL01/D3/2004-01-13/i/732183p.fits.fz')
+if os.name == 'nt':
+    file_path = 'data/'
+else:
+    file_path = '/sps/lsst/data/CFHT/D3/input/raw/'
+
+file_name = file_path + '/03BL01/D3/2004-01-13/i/732183p.fits.fz'
 
 # Parse the WCS keywords in the primary HDU
 

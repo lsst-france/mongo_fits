@@ -59,8 +59,10 @@ def radec_to_xy(header, ra, dec):
 
 # Load the FITS hdulist using pyfits
 
-file_path = 'data/'
-file_path = '/sps/lsst/data/CFHT/D3/input/raw/'
+if os.name == 'nt':
+    file_path = 'data/'
+else:
+    file_path = '/sps/lsst/data/CFHT/D3/input/raw/'
 
 file_name = file_path + '/03BL01/D3/2004-01-13/i/732183p.fits.fz'
 

@@ -104,6 +104,7 @@ else:
 
 file_name = file_path + '/03BL01/D3/2004-01-13/i/732183p.fits.fz'
 
+hdus = read_hdus(file_name)
 # Parse the WCS keywords in the primary HDU
 
 for n in range(1, 36):

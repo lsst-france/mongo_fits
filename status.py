@@ -18,6 +18,7 @@ if os.name == 'nt':
 else:
     MONGO_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/lsst'
     FILES_ROOT = '/sps/lsst/data/CFHT/input/raw/'
+    MONGO2_URL = r'mongodb://lsst:lsst2015@172.17.0.190:27017/snlsfits'
 
 FILES = FILES_ROOT + '/*/*/*/*/*.fits.fz'
 
@@ -27,17 +28,20 @@ if __name__ == '__main__':
 
     lsst = client.lsst
 
+
+    print '------------lsst'
     for coll in lsst.collection_names():
         c = lsst[coll]
         print coll, c.count()
 
-    exit()
+    client = pymongo.MongoClient(MONGO2_URL)
+    lsst = client.snlsfits
 
-    try:
-        fits = lsst.fits
-        # lsst.drop_collection('fits')
-    except:
-        pass
-        opts = CodecOptions(document_class=SON)
-        fits = lsst.create_collection('fits', codec_options=opts)
+    print '------------snlsfits'
+    for coll in lsst.collection_names():
+        c = lsst[coll]
+        print coll, c.count()
+
+        o = c.find_one()
+        print o
 

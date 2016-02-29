@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     lsst = client.lsst
 
-    recreate = True
+    recreate = False
 
     if recreate:
         try:
@@ -117,8 +117,6 @@ if __name__ == '__main__':
             print f, 'is encoded'
             for x in out:
                 print x[u'where']
-
-        break
 
     print '# of objects in collection', fits.count()
 

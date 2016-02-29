@@ -1,0 +1,78 @@
+***************************************************************
+*                  Grid Engine Batch System                   *
+*           IN2P3 Computing Centre, Villeurbanne FR           *
+***************************************************************
+* User:                    arnault                            *
+* Group:                   lsst                               *
+* Jobname:                 filldtb                            *
+* JobID:                   21742822                           *
+* Queue:                   medium                             *
+* Worker:                  ccwsge0128.in2p3.fr                *
+* Operating system:        Linux 2.6.32-573.8.1.el6.x86_64    *
+* Project:                 P_lsst                             *
+***************************************************************
+* Submitted on:            Tue Jan 12 10:14:32 2016           *
+* Started on:              Tue Jan 12 10:14:45 2016           *
+***************************************************************
+
+Python 2.7.9 :: Anaconda 2.2.0 (64-bit)
+WARNING: FITSFixedWarning: RADECSYS= 'FK5 ' / Coordinate system for equinox (FK4/FK5/GAPPT) 
+RADECSYS is non-standard, use RADESYSa. [astropy.wcs.wcs]
+WARNING: FITSFixedWarning: The WCS transformation has more axes (2) than the image it is associated with (0) [astropy.wcs.wcs]
+WARNING: FITSFixedWarning: 'datfix' made the change 'Invalid parameter value: inconsistent date '2004-01-13''. [astropy.wcs.wcs]
+mycollection 8
+osman 3
+spark 8
+existing file 03BL01/D3/2004-01-13/r/732190p.fits.fz
+encode file 03BL01/D3/2004-01-13/r/732190p.fits.fz
+# of objects in collection 37
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+[u'03BL01', u'D3', u'2004-01-13', u'r', u'732190p.fits.fz']
+
+***************************************************************
+* Ended on:                Tue Jan 12 10:15:38 2016           *
+* Exit status:             0                                  *
+* Consumed                                                    *
+*   cpu (HS06):            00:00:30                           *
+*   cpu scaling factor:    9.670000                           *
+*   cpu time:              3 / 18000                          *
+*   efficiency:            05 %                               *
+*   io:                    0.07021                            *
+*   vmem:                  360.301M                           *
+*   maxvmem:               360.301M                           *
+***************************************************************

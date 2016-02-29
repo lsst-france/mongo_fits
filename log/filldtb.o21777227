@@ -1,0 +1,49 @@
+***************************************************************
+*                  Grid Engine Batch System                   *
+*           IN2P3 Computing Centre, Villeurbanne FR           *
+***************************************************************
+* User:                    arnault                            *
+* Group:                   lsst                               *
+* Jobname:                 filldtb                            *
+* JobID:                   21777227                           *
+* Queue:                   medium                             *
+* Worker:                  ccwsge0772.in2p3.fr                *
+* Operating system:        Linux 2.6.32-573.8.1.el6.x86_64    *
+* Project:                 P_lsst                             *
+***************************************************************
+* Submitted on:            Tue Jan 12 18:04:44 2016           *
+* Started on:              Tue Jan 12 18:05:14 2016           *
+***************************************************************
+
+Python 2.7.9 :: Anaconda 2.2.0 (64-bit)
+Traceback (most recent call last):
+  File "fits.py", line 99, in <module>
+    for coll in lsst.collection_names():
+  File "/sps/lsst/Library/stack_v11_0/Linux64/anaconda/2.2.0/lib/python2.7/site-packages/pymongo/database.py", line 517, in collection_names
+    ReadPreference.PRIMARY) as (sock_info, slave_okay):
+  File "/sps/lsst/Library/stack_v11_0/Linux64/anaconda/2.2.0/lib/python2.7/contextlib.py", line 17, in __enter__
+    return self.gen.next()
+  File "/sps/lsst/Library/stack_v11_0/Linux64/anaconda/2.2.0/lib/python2.7/site-packages/pymongo/mongo_client.py", line 748, in _socket_for_reads
+    with self._get_socket(read_preference) as sock_info:
+  File "/sps/lsst/Library/stack_v11_0/Linux64/anaconda/2.2.0/lib/python2.7/contextlib.py", line 17, in __enter__
+    return self.gen.next()
+  File "/sps/lsst/Library/stack_v11_0/Linux64/anaconda/2.2.0/lib/python2.7/site-packages/pymongo/mongo_client.py", line 712, in _get_socket
+    server = self._get_topology().select_server(selector)
+  File "/sps/lsst/Library/stack_v11_0/Linux64/anaconda/2.2.0/lib/python2.7/site-packages/pymongo/topology.py", line 141, in select_server
+    address))
+  File "/sps/lsst/Library/stack_v11_0/Linux64/anaconda/2.2.0/lib/python2.7/site-packages/pymongo/topology.py", line 117, in select_servers
+    self._error_message(selector))
+pymongo.errors.ServerSelectionTimeoutError: 172.17.0.190:27017: timed out
+
+***************************************************************
+* Ended on:                Tue Jan 12 18:05:50 2016           *
+* Exit status:             1                                  *
+* Consumed                                                    *
+*   cpu (HS06):            00:00:00                           *
+*   cpu scaling factor:    11.100000                          *
+*   cpu time:              0 / 18000                          *
+*   efficiency:            00 %                               *
+*   io:                    0.00000                            *
+*   vmem:                  N/A                                *
+*   maxvmem:               N/A                                *
+***************************************************************

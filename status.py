@@ -33,8 +33,12 @@ if __name__ == '__main__':
     for coll in lsst.collection_names():
         c = lsst[coll]
         print coll, c.count()
-        o = c.find_one()
-        print o
+        '''
+        {}
+        { 'bottom_right.0' : { $gt: 214.9, $lt: 215.1 } }
+        '''
+        for o in c.find( { 'bottom_right.0' : { '$gt': 215.00000, '$lt': 215.20000 } }, {'_id':0, 'where':1 } ):
+            print o
 
 
 

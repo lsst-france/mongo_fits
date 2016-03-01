@@ -214,7 +214,8 @@ def fits_to_mongo(fits, name):
 
         thebytes = pickle.dumps(wcs, protocol=2)
         object['wcs'] = Binary(thebytes)
-        object['corners'] = (ra_dec0, ra_dec1)
+        object['top_left'] = ra_dec0
+        object['bottom_right'] = ra_dec1
 
         for card in hdr._cards:
             comment = card.comment

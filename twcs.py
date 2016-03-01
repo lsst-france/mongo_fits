@@ -102,7 +102,7 @@ if os.name == 'nt':
 else:
     file_path = '/sps/lsst/data/CFHT/D3/input/raw/'
 
-file_name = file_path + '/03BL01/D3/2004-01-13/i/732183p.fits.fz'
+file_name = file_path + '03BL01/D3/2004-01-13/r/732190p.fits.fz'
 
 hdus = read_hdus(file_name)
 # Parse the WCS keywords in the primary HDU

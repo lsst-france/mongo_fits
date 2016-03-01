@@ -33,6 +33,10 @@ if __name__ == '__main__':
     for coll in lsst.collection_names():
         c = lsst[coll]
         print coll, c.count()
+        o = c.find_one()
+        print o
+
+
 
     client = pymongo.MongoClient(MONGO2_URL)
     lsst = client.snlsfits

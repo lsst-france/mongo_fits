@@ -29,18 +29,11 @@ if __name__ == '__main__':
     lsst = client.lsst
 
     print '------------lsst'
-    for coll in lsst.collection_names():
-        c = lsst[coll]
-        print coll, c.count()
+    c = lsst.fits
+    print c.count()
 
-    if os.name == 'nt':
-        exit()
+    c.create_index( [ ('center', '2dsphere') ] )
 
-    client = pymongo.MongoClient(MONGO2_URL)
-    lsst = client.snlsfits
-
-    print '------------snlsfits'
-    for coll in lsst.collection_names():
-        c = lsst[coll]
-        print coll, c.count()
+    for o in c.find( { 'center' : { '$geoWithin': { '$centerSphere' : [ [ -145.0, 53.0 ], 1.0 ] } } } , {'_id':0, 'where':1, 'center':1 } ):
+        print o
 

@@ -191,13 +191,14 @@ def fits_to_mongo(fits, name):
         hdr = hdu.header
 
         ra_dec0, ra_dec1 = None, None
-        ra_dec = None
+        ra, dec = None, None
 
         wcs = pywcs.WCS(hdr)
         try:
             mywcs = MyWCS(hdr)
             ra_dec0, ra_dec1 = get_corners(hdr, wcs, mywcs)
-            ra_dec = ( (ra_dec0[0] + ra_dec1[0])/2.0, (ra_dec0[1] + ra_dec1[1])/2.0 )
+            ra = (ra_dec0[0] + ra_dec1[0])/2.0 - 360.0
+            dec = (ra_dec0[1] + ra_dec1[1])/2.0
             myrange.update(ra_dec0)
             myrange.update(ra_dec1)
 
@@ -218,8 +219,8 @@ def fits_to_mongo(fits, name):
         object['wcs'] = Binary(thebytes)
         object['top_left'] = ra_dec0
         object['bottom_right'] = ra_dec1
-        if ra_dec is not None:
-            object['center'] = { 'type':'2dsphere', 'coordinates':[ ra_dec[0], ra_dec[1] ] } 
+        if ra is not None:
+            object['center'] = { 'type':'Point', 'coordinates':[ ra, dec ] }
 
         for card in hdr._cards:
             comment = card.comment

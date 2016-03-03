@@ -28,7 +28,6 @@ if __name__ == '__main__':
 
     lsst = client.lsst
 
-
     print '------------lsst'
     for coll in lsst.collection_names():
         c = lsst[coll]
@@ -37,13 +36,15 @@ if __name__ == '__main__':
         {}
         { 'bottom_right.0' : { $gt: 214.9, $lt: 215.1 } }
         '''
-        for o in c.find( { 'bottom_right.0' : { '$gt': 215.00000, '$lt': 215.20000 } }, {'_id':0, 'where':1 } ):
+        c.create_index( [ ('center', '2dsphere') ] )
+        for o in c.find( { 'center' : { '$near': [ 215.0, 53.0 ], '$maxDistance': 1.0 } } , {'_id':0, 'where':1, 'center':1 } ):
             print o
 
 
 
     client = pymongo.MongoClient(MONGO2_URL)
     lsst = client.snlsfits
+
 
     print '------------snlsfits'
     for coll in lsst.collection_names():

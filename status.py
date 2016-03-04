@@ -43,4 +43,15 @@ if __name__ == '__main__':
     for coll in lsst.collection_names():
         c = lsst[coll]
         print coll, c.count()
+        if coll == 'spark':
+            for i, doc in enumerate(c.find( { 'HDULIST.keys': { '$elemMatch': { 'keyname': 'CRPIX1' } } } , { 'HDULIST.$': 1 } ) ):
+                # n = len(doc['HDULIST'])
+                # if n == 0: continue
+                print doc
+                exit()
+                if i % 1000 == 0 : print i
+                if i > 3: break
+
+            print lengths
+
 

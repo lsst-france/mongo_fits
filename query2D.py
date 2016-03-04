@@ -9,6 +9,7 @@ import numpy
 from bson import CodecOptions, SON
 import glob
 import os
+import sys
 
 CC = True
 
@@ -34,6 +35,11 @@ if __name__ == '__main__':
 
     c.create_index( [ ('center', '2dsphere') ] )
 
-    for o in c.find( { 'center' : { '$geoWithin': { '$centerSphere' : [ [ -145.0, 53.0 ], 1.0 ] } } } , {'_id':0, 'where':1, 'center':1 } ):
+    radius = 1.0
+
+    if len(sys.argv) > 1:
+        radius = float(sys.argv[1])
+
+    for o in c.find( { 'center' : { '$geoWithin': { '$centerSphere' : [ [ -145.0, 53.0 ], radius ] } } } , {'_id':0, 'where':1, 'center':1 } ):
         print o
 
